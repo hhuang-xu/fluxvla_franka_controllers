@@ -1,75 +1,173 @@
-# SERL Franka Controllers
+# FluxVLA Franka Controllers
 
-> Robot controller used in SERL (A Software Suite for Sample-Efficient Robotic Reinforcement Learning)
+`fluxvla_franka_controllers` is a ROS Noetic controller package for Franka
+Emika robots. It contains Cartesian impedance control, Ruckig-smoothed joint
+position control, and a Ruckig-based joint impedance controller.
 
-Serl Website and Paper: https://serl-robot.github.io/
+This package is forked from the upstream SERL Franka controller package. The
+original MIT license and attribution are preserved in `LICENSE` and `NOTICE`.
 
-`serl_franka_controllers` is a ROS package designed to control Franka Emika Robot through `libfranka` and `franka_ros`. This package provides a compliant yet accurate Cartesian Impedance Controller for safe online reinforcement learning algorithms, as well as a Joint Position Controller for resetting arm. 
+## Controllers
 
-Compliance and accuracy is achieved at the same time by limiting the reference point of the Impedance controller to be within a certain distance from the current pose in the realtime loop. This way, a high gain can be used for accuracy without excess force when in contact.
+- `cartesian_impedance_controller`: Cartesian impedance controller with dynamic
+  reconfigure compliance parameters.
+- `joint_position_controller`: simple reset / point-to-point joint position
+  controller.
+- `ruckig_joint_position_controller`: PositionJointInterface controller that
+  accepts `sensor_msgs/JointState` targets on `target_joint_state` and smooths
+  them with Ruckig.
+- `ruckig_joint_impedance_controller`: EffortJointInterface controller that
+  accepts joint targets, smooths them with Ruckig, and outputs follower-style
+  joint PD torques.
 
-![Image](controller_plot.jpg)
+## Prerequisites
 
+Use Ubuntu 20.04 with ROS Noetic and a catkin workspace.
 
-## Installation
-
-### Prerequisites
-- ROS Noetic
-- Installation of `libfranka>=0.8.0` and `franka_ros>=0.8.0` according to the [Franka FCI Documentation](https://frankaemika.github.io/docs/installation_linux.html)
-  ```bash
-  sudo apt install ros-noetic-libfranka ros-noetic-franka-ros
-  ```
-
-### Installing via apt-get
 ```bash
-sudo apt-get install ros-serl_franka_controllers
+sudo apt update
+sudo apt install \
+  build-essential cmake git python3-catkin-tools python3-rosdep \
+  ros-noetic-controller-interface \
+  ros-noetic-controller-manager \
+  ros-noetic-dynamic-reconfigure \
+  ros-noetic-eigen-conversions \
+  ros-noetic-franka-ros \
+  ros-noetic-hardware-interface \
+  ros-noetic-pluginlib \
+  ros-noetic-realtime-tools \
+  ros-noetic-ros-control \
+  ros-noetic-rqt-reconfigure \
+  ros-noetic-tf \
+  ros-noetic-tf-conversions
 ```
 
-### Installing from Source
+Install `libfranka` and `franka_ros` according to the Franka FCI documentation.
+On machines using the ROS packages, the command above installs the Noetic
+`franka_ros` stack and its packaged `libfranka` dependency.
+
+## Install Ruckig
+
+Prefer the ROS package if it is available in your apt sources:
+
 ```bash
+sudo apt install ros-noetic-ruckig
+```
+
+If the package is not available, install Ruckig from source so CMake can find
+the imported target `ruckig::ruckig`:
+
+```bash
+cd /tmp
+git clone https://github.com/pantor/ruckig.git
+cd ruckig
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+  -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF -DBUILD_PYTHON_MODULE=OFF
+cmake --build build -j"$(nproc)"
+sudo cmake --install build
+sudo ldconfig
+```
+
+If Ruckig is installed to a custom prefix, source or export that prefix before
+building this package:
+
+```bash
+export CMAKE_PREFIX_PATH=/path/to/ruckig/install:$CMAKE_PREFIX_PATH
+```
+
+## Build From Source
+
+Place this repository in a catkin workspace:
+
+```bash
+mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/src
-git clone git@github.com:rail-berkeley/serl_franka_controllers.git
+git clone <your-fluxvla-franka-controllers-repo> fluxvla_franka_controllers
 cd ~/catkin_ws
-catkin_make --pkg serl_franka_controllers
-source ~/catkin_ws/devel/setup.bash
+rosdep update
+rosdep install --from-paths src --ignore-src -r -y
+catkin_make --pkg fluxvla_franka_controllers
+source devel/setup.bash
 ```
 
-### Realtime Constraint
-The `franka_ros` requires a realtime kernel by default. This is not possible if you want to install CUDA on the same machine. A workaround is to ignore the realtime constraint in `catkin_ws/src/franka_ros/franka_control/config/franka_control_node.yaml`
+Verify that ROS can find the package:
+
+```bash
+rospack find fluxvla_franka_controllers
+roscd fluxvla_franka_controllers
+```
+
+## Launch Controllers
+
+Replace `<RobotIP>` with the Franka robot IP address. Set `load_gripper` to
+`true` only when a gripper should be loaded.
+
+Launch files for replay:
+
+```bash
+roslaunch fluxvla_franka_controllers single_joint.launch \
+  robot_ip:=<RobotIP> load_gripper:=false
+roslaunch fluxvla_franka_controllers single_eepose.launch \
+  robot_ip:=<RobotIP> load_gripper:=false
+roslaunch fluxvla_franka_controllers dual_joint.launch \
+  left_robot_ip:=<LeftIP> right_robot_ip:=<RightIP> load_gripper:=false
+roslaunch fluxvla_franka_controllers dual_eepose.launch \
+  left_robot_ip:=<LeftIP> right_robot_ip:=<RightIP> load_gripper:=false
+```
+
+The `joint` examples launch `fluxvla_franka_controllers/RuckigJointImpedanceController`.
+The `eepose` examples are provided here as convenience entry points and launch
+SERL's `serl_franka_controllers/CartesianImpedanceController`.
+
+After launching a replay controller, publish targets to:
+
+```text
+/<arm_namespace>/ruckig_joint_impedance_controller/target_joint_state
+/<arm_namespace>/cartesian_impedance_controller/equilibrium_pose
+```
+
+For a single-arm launch without an outer namespace, omit the arm namespace.
+
+## Basic Verification
+
+Check that the controller is loaded:
+
+```bash
+rosservice call /controller_manager/list_controllers
+```
+
+Replay a prepared dual-arm CSV through the joint impedance controller at 30 Hz:
+
+```bash
+rosrun fluxvla_franka_controllers replay_joint_impedance_csv.py \
+  --csv /path/to/replay.csv --control_mode joint --execute
+```
+
+Replay end-effector poses through the SERL Cartesian impedance controller:
+
+```bash
+rosrun fluxvla_franka_controllers replay_joint_impedance_csv.py \
+  --csv /path/to/replay.csv --control_mode eepose --execute
+```
+
+Joint mode expects `left_q1` ... `left_q7` and `right_q1` ... `right_q7`.
+End-effector mode expects `left_x,left_y,left_z,left_qx,left_qy,left_qz,left_qw`
+and the matching `right_*` columns. Optional `left_gripper` and `right_gripper`
+columns are published to the Franka gripper move action goal topics.
+Dataset-specific conversion, such as parquet to CSV, should live outside this
+controller package.
+
+## Realtime Note
+
+`franka_ros` expects a realtime-capable system for robot control. If you are
+developing on a non-realtime machine, follow the Franka documentation for safe
+setup. For local testing without hardware, do not connect to the robot.
+
+Some development machines ignore the realtime check in
+`franka_control/config/franka_control_node.yaml`:
+
 ```yaml
 realtime_config: ignore
 ```
 
-
-## Usage
-
-### Cartesian Impedance Controller
-
-To launch the Cartesian Impedance Controller, use:
-```bash
-roslaunch serl_franka_controllers impedance.launch robot_ip:=<RobotIP> load_gripper:=<true/false>
-```
-Replace <RobotIP> with the IP address of your Franka robot. The load_gripper argument is a boolean value (true or false) depending on whether you have a gripper attached.
-
-Compliance parameters for the controller can be adjusted in an interactive GUI by running `rosrun rqt_reconfigure rqt_reconfigure`. This can also be achieved in Python code as demonstrated in the example section.
-
-### Joint Position Controller
-
-For resetting or moving the robot to a specific joint position, launch the joint position controller:
-
-```bash
-rosparam set /target_joint_positions '[q1, q2, q3, q4, q5, q6, q7]'
-roslaunch serl_franka_controllers joint.launch robot_ip:=<RobotIP> load_gripper:=<true/false>
-```
-Here, you also need to replace <RobotIP> with the actual IP address and specify the load_gripper option. Then replace `[q1, q2, q3, q4, q5, q6, q7]` with the desired joint positions.
-
-
-## rospy Example
-
-We include a `requirements.txt` and python script to show one way of interacting with the controller. This script shows how to adjust the reference limiting values and how to send robot commands through ROS Topics and `dynamic_reconfigure`. To use this, run
-```bash
-conda create -n serl_controller python=3.8
-conda activate serl_controller
-pip install -r requirements.txt
-python test/test.py --robot_ip=ROBOT_IP
-```
+Only use that workaround if it matches your lab's safety policy.

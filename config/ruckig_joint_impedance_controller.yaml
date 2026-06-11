@@ -1,0 +1,29 @@
+ruckig_joint_impedance_controller:
+    type: fluxvla_franka_controllers/RuckigJointImpedanceController
+    arm_id: panda
+    joint_names:
+        - panda_joint1
+        - panda_joint2
+        - panda_joint3
+        - panda_joint4
+        - panda_joint5
+        - panda_joint6
+        - panda_joint7
+
+    # Franka follower-style joint PD torque law:
+    # tau = K * (q_goal - q) + D * (-dq_filtered)
+    k_alpha: 0.99
+    k_gains: [500.0, 240.0, 240.0, 240.0, 100.0, 60.0, 70.0]
+    d_gains: [38.0, 20.0, 20.0, 10.0, 10.0, 10.0, 11.0]
+
+    # Model feedforward term from FrankaModelInterface.
+    coriolis_factor: 1.0
+
+    # Move smoothly from the current robot state to the first valid target
+    # before entering normal target following.
+    sync_after_activation: true
+
+    # Ruckig limits are percentages of the Panda FCI joint limits.
+    max_velocity_percent: 60.0
+    max_acceleration_percent: 30.0
+    max_jerk_percent: 10.0

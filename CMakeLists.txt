@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.4)
-project(serl_franka_controllers)
+project(fluxvla_franka_controllers)
 
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_STANDARD 20)
@@ -24,6 +24,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(Eigen3 REQUIRED)
 find_package(Franka 0.7.0 REQUIRED)
+find_package(ruckig REQUIRED)
 
 add_message_files(FILES ZeroJacobian.msg)
 generate_messages()
@@ -34,7 +35,7 @@ generate_dynamic_reconfigure_options(
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES serl_franka_controllers
+  LIBRARIES fluxvla_franka_controllers
   CATKIN_DEPENDS
     controller_interface
     dynamic_reconfigure
@@ -52,12 +53,14 @@ catkin_package(
   DEPENDS Franka
 )
 
-add_library(serl_franka_controllers
+add_library(fluxvla_franka_controllers
   src/joint_position_controller.cpp
   src/cartesian_impedance_controller.cpp
+  src/ruckig_joint_position_controller.cpp
+  src/ruckig_joint_impedance_controller.cpp
   )
 
-add_dependencies(serl_franka_controllers
+add_dependencies(fluxvla_franka_controllers
   ${${PROJECT_NAME}_EXPORTED_TARGETS}
   ${catkin_EXPORTED_TARGETS}
   ${PROJECT_NAME}_generate_messages_cpp
@@ -65,36 +68,45 @@ add_dependencies(serl_franka_controllers
   ${PROJECT_NAME}_gencfg
 )
 
-target_link_libraries(serl_franka_controllers PUBLIC
+target_link_libraries(fluxvla_franka_controllers PUBLIC
   ${Franka_LIBRARIES}
   ${catkin_LIBRARIES}
+  ruckig::ruckig
 )
 
-target_include_directories(serl_franka_controllers SYSTEM PUBLIC
+target_include_directories(fluxvla_franka_controllers SYSTEM PUBLIC
   ${Franka_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
 )
-target_include_directories(serl_franka_controllers PUBLIC
+target_include_directories(fluxvla_franka_controllers PUBLIC
   include
 )
 
 ## Installation
-install(TARGETS serl_franka_controllers
+install(TARGETS fluxvla_franka_controllers
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+catkin_install_python(PROGRAMS
+  scripts/replay_joint_impedance_csv.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
-# install(DIRECTORY launch
-#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-# )
+install(DIRECTORY launch
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
 install(DIRECTORY config
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
-install(FILES serl_franka_controllers_plugin.xml
+install(FILES fluxvla_franka_controllers_plugin.xml
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+install(FILES LICENSE NOTICE README.md
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
@@ -108,9 +120,9 @@ if(CLANG_TOOLS)
     ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
   )
-  add_format_target(serl_franka_controllers FILES ${SOURCES} ${HEADERS})
-  add_tidy_target(serl_franka_controllers
+  add_format_target(fluxvla_franka_controllers FILES ${SOURCES} ${HEADERS})
+  add_tidy_target(fluxvla_franka_controllers
     FILES ${SOURCES}
-    DEPENDS serl_franka_controllers
+    DEPENDS fluxvla_franka_controllers
   )
 endif()

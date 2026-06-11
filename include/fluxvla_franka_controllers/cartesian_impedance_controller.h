@@ -16,13 +16,13 @@
 #include <ros/time.h>
 #include <Eigen/Dense>
 
-#include <serl_franka_controllers/compliance_paramConfig.h>
+#include <fluxvla_franka_controllers/compliance_paramConfig.h>
 #include <franka_hw/franka_model_interface.h>
 #include <franka_hw/franka_state_interface.h>
 #include <realtime_tools/realtime_publisher.h>
-#include <serl_franka_controllers/ZeroJacobian.h>
+#include <fluxvla_franka_controllers/ZeroJacobian.h>
 
-namespace serl_franka_controllers {
+namespace fluxvla_franka_controllers {
 
 class CartesianImpedanceController : public controller_interface::MultiInterfaceController<
                                                 franka_hw::FrankaModelInterface,
@@ -71,17 +71,17 @@ class CartesianImpedanceController : public controller_interface::MultiInterface
   Eigen::Quaterniond orientation_d_target_;
 
   // Dynamic reconfigure
-  std::unique_ptr<dynamic_reconfigure::Server<serl_franka_controllers::compliance_paramConfig>>
+  std::unique_ptr<dynamic_reconfigure::Server<fluxvla_franka_controllers::compliance_paramConfig>>
       dynamic_server_compliance_param_;
   ros::NodeHandle dynamic_reconfigure_compliance_param_node_;
-  void complianceParamCallback(serl_franka_controllers::compliance_paramConfig& config,
+  void complianceParamCallback(fluxvla_franka_controllers::compliance_paramConfig& config,
                                uint32_t level);
   void publishZeroJacobian(const ros::Time& time);
-  realtime_tools::RealtimePublisher<serl_franka_controllers::ZeroJacobian> publisher_franka_jacobian_;
+  realtime_tools::RealtimePublisher<fluxvla_franka_controllers::ZeroJacobian> publisher_franka_jacobian_;
   void publishDebug(const ros::Time& time);
   // Equilibrium pose subscriber
   ros::Subscriber sub_equilibrium_pose_;
   void equilibriumPoseCallback(const geometry_msgs::PoseStampedConstPtr& msg);
 };
 
-}  // namespace serl_franka_controllers
+}  // namespace fluxvla_franka_controllers

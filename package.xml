@@ -1,14 +1,12 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>serl_franka_controllers</name>
+  <name>fluxvla_franka_controllers</name>
   <version>0.1.1</version>
-  <description>serl_franka_controllers provides a compliant yet accurate Cartesian impedance controller for controlling Franka Emika research robots that can be used in online reinforcement learning applications </description>
-  <maintainer email="xuc@berkeley.edu">Charles Xu</maintainer>
+  <description>FluxVLA Franka controllers for Cartesian impedance, joint-position Ruckig smoothing, and joint-impedance Ruckig control on Franka Emika research robots.</description>
+  <maintainer email="fluxvla-maintainers@example.com">FluxVLA Maintainers</maintainer>
   <license>MIT</license>
 
-  <url type="website">https://serl-robot.github.io/</url>
-  <url type="repository">https://github.com/rail-berkeley/serl_franka_controllers/</url>
-  <author>Jianlan Luo, Charles Xu</author>
+  <author>FluxVLA Contributors</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 
@@ -30,14 +28,17 @@
   <depend>pluginlib</depend>
   <depend>realtime_tools</depend>
   <depend>roscpp</depend>
+  <depend>ruckig</depend>
 
   <exec_depend>franka_control</exec_depend>
   <exec_depend>franka_description</exec_depend>
   <exec_depend>message_runtime</exec_depend>
+  <exec_depend>controller_manager_msgs</exec_depend>
   <exec_depend>panda_moveit_config</exec_depend>
   <exec_depend>rospy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
 
   <export>
-    <controller_interface plugin="${prefix}/serl_franka_controllers_plugin.xml"/>
+    <controller_interface plugin="${prefix}/fluxvla_franka_controllers_plugin.xml"/>
   </export>
 </package>

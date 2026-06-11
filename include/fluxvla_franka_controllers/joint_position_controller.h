@@ -12,7 +12,7 @@
 #include <ros/node_handle.h>
 #include <ros/time.h>
 
-namespace serl_franka_controllers {
+namespace fluxvla_franka_controllers {
 
 class JointPositionController : public controller_interface::MultiInterfaceController<
                                            hardware_interface::PositionJointInterface> {
@@ -30,4 +30,4 @@ class JointPositionController : public controller_interface::MultiInterfaceContr
   std::array<double, 7> reset_pose_{};
 };
 
-}  // namespace serl_franka_controllers
+}  // namespace fluxvla_franka_controllers

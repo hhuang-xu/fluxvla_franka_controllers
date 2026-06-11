@@ -1,5 +1,5 @@
 joint_position_controller:
-    type: serl_franka_controllers/JointPositionController
+    type: fluxvla_franka_controllers/JointPositionController
     joint_names:
         - panda_joint1
         - panda_joint2
@@ -10,7 +10,7 @@ joint_position_controller:
         - panda_joint7
 
 cartesian_impedance_controller:
-    type: serl_franka_controllers/CartesianImpedanceController
+    type: fluxvla_franka_controllers/CartesianImpedanceController
     arm_id: panda
     joint_names:
         - panda_joint1

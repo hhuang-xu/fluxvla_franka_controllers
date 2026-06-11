@@ -3,7 +3,7 @@ Refered to Source file:
   https://github.com/frankaemika/franka_ros/blob/develop/franka_example_controllers/src/joint_position_example_controller.cpp
 */
 
-#include <serl_franka_controllers/joint_position_controller.h>
+#include <fluxvla_franka_controllers/joint_position_controller.h>
 
 #include <cmath>
 
@@ -13,7 +13,7 @@ Refered to Source file:
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
 
-namespace serl_franka_controllers {
+namespace fluxvla_franka_controllers {
 
 bool JointPositionController::init(hardware_interface::RobotHW* robot_hardware,
                                           ros::NodeHandle& node_handle) {
@@ -65,18 +65,23 @@ void JointPositionController::starting(const ros::Time& /* time */) {
 void JointPositionController::update(const ros::Time& /*time*/,
                                             const ros::Duration& period) {
   elapsed_time_ += period;
+  const double t = elapsed_time_.toSec();
+  const double duration = 10.0;
 
   for (size_t i = 0; i < 7; ++i) {
-    if (elapsed_time_.toSec() > 10){
-      position_joint_handles_[i].setCommand(reset_pose_[i]); // - delta_angle);
-    }
-    else {
-      position_joint_handles_[i].setCommand( ((elapsed_time_.toSec()) / 10.0) * reset_pose_[i] + ((10 - elapsed_time_.toSec()) / 10.0) * initial_pose_[i]);
+    if (t >= duration) {
+      position_joint_handles_[i].setCommand(reset_pose_[i]);
+    } else {
+      // smoothstep: s = 3τ² − 2τ³, gives zero velocity at τ=0 and τ=1
+      const double tau = t / duration;
+      const double s = tau * tau * (3.0 - 2.0 * tau);
+      position_joint_handles_[i].setCommand(
+          (1.0 - s) * initial_pose_[i] + s * reset_pose_[i]);
     }
   }
 }
 
-}  // namespace serl_franka_controllers
+}  // namespace fluxvla_franka_controllers
 
-PLUGINLIB_EXPORT_CLASS(serl_franka_controllers::JointPositionController,
+PLUGINLIB_EXPORT_CLASS(fluxvla_franka_controllers::JointPositionController,
                        controller_interface::ControllerBase)

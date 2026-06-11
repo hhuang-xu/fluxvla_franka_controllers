@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<launch>
+  <arg name="left_robot_ip" default="172.16.0.2" />
+  <arg name="right_robot_ip" default="172.16.0.3" />
+  <arg name="load_gripper" default="true" />
+
+  <group ns="left_arm">
+    <include file="$(find fluxvla_franka_controllers)/launch/single_joint.launch">
+      <arg name="robot_ip" value="$(arg left_robot_ip)" />
+      <arg name="load_gripper" value="$(arg load_gripper)" />
+    </include>
+  </group>
+
+  <group ns="right_arm">
+    <include file="$(find fluxvla_franka_controllers)/launch/single_joint.launch">
+      <arg name="robot_ip" value="$(arg right_robot_ip)" />
+      <arg name="load_gripper" value="$(arg load_gripper)" />
+    </include>
+  </group>
+</launch>

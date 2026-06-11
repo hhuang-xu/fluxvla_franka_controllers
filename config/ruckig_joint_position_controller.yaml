@@ -1,0 +1,22 @@
+ruckig_joint_position_controller:
+    type: fluxvla_franka_controllers/RuckigJointPositionController
+    arm_id: panda
+    joint_names:
+        - panda_joint1
+        - panda_joint2
+        - panda_joint3
+        - panda_joint4
+        - panda_joint5
+        - panda_joint6
+        - panda_joint7
+    # Ruckig limits are percentages of the Panda FCI spec. Incoming streamed
+    # qpos targets are optionally sampled through a lookahead buffer, linearly
+    # interpolated, then passed through a first-order target filter.
+    max_velocity_percent: 40.0
+    max_acceleration_percent: 20.0
+    max_jerk_percent: 5.0
+    enable_lookahead: true
+    lookahead_delay: 0.0
+    buffer_duration: 0.5
+    target_filter_alpha: 0.02
+    max_interpolation_gap: 0.25

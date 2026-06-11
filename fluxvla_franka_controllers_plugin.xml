@@ -1,0 +1,22 @@
+<library path="lib/libfluxvla_franka_controllers">
+  <class name="fluxvla_franka_controllers/JointPositionController" type="fluxvla_franka_controllers::JointPositionController" base_class_type="controller_interface::ControllerBase">
+    <description>
+      A controller that executes a short motion based on joint positions to demonstrate correct usage
+    </description>
+  </class>
+  <class name="fluxvla_franka_controllers/CartesianImpedanceController" type="fluxvla_franka_controllers::CartesianImpedanceController" base_class_type="controller_interface::ControllerBase">
+    <description>
+      A controller that renders a spring damper system in cartesian space. Compliance parameters and the equilibrium pose can be modified online with dynamic reconfigure and an interactive marker respectively.
+    </description>
+  </class>
+  <class name="fluxvla_franka_controllers/RuckigJointPositionController" type="fluxvla_franka_controllers::RuckigJointPositionController" base_class_type="controller_interface::ControllerBase">
+    <description>
+      Jerk-limited online joint-position controller backed by ruckig with an input lookahead buffer and first-order target filtering. Subscribes to sensor_msgs/JointState on target_joint_state and writes smooth joint-position commands through PositionJointInterface.
+    </description>
+  </class>
+  <class name="fluxvla_franka_controllers/RuckigJointImpedanceController" type="fluxvla_franka_controllers::RuckigJointImpedanceController" base_class_type="controller_interface::ControllerBase">
+    <description>
+      Joint torque controller that accepts low-rate sensor_msgs/JointState targets on target_joint_state, smooths them with a small lookahead buffer and Ruckig, and outputs Franka follower-style joint PD torques. Publishes INACTIVE, SYNCING, and FOLLOWING on the state topic.
+    </description>
+  </class>
+</library>

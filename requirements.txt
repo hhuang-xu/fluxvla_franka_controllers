@@ -1,5 +1,0 @@
-rospkg
-scipy
-requests
-absl-py
-defusedxml

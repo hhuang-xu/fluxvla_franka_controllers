@@ -3,7 +3,7 @@ Reference:
   https://github.com/frankaemika/franka_ros/blob/develop/franka_example_controllers/src/cartesian_impedance_example_controller.cpp
 */
 
-#include <serl_franka_controllers/cartesian_impedance_controller.h>
+#include <fluxvla_franka_controllers/cartesian_impedance_controller.h>
 
 #include <cmath>
 #include <memory>
@@ -13,10 +13,10 @@ Reference:
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>
 
-#include <serl_franka_controllers/pseudo_inversion.h>
+#include <fluxvla_franka_controllers/pseudo_inversion.h>
 #include <ros/console.h>
 
-namespace serl_franka_controllers {
+namespace fluxvla_franka_controllers {
 
 bool CartesianImpedanceController::init(hardware_interface::RobotHW* robot_hw,
                                                ros::NodeHandle& node_handle) {
@@ -93,7 +93,7 @@ bool CartesianImpedanceController::init(hardware_interface::RobotHW* robot_hw,
       ros::NodeHandle(node_handle.getNamespace() + "dynamic_reconfigure_compliance_param_node");
 
   dynamic_server_compliance_param_ = std::make_unique<
-      dynamic_reconfigure::Server<serl_franka_controllers::compliance_paramConfig>>(
+      dynamic_reconfigure::Server<fluxvla_franka_controllers::compliance_paramConfig>>(
 
       dynamic_reconfigure_compliance_param_node_);
   dynamic_server_compliance_param_->setCallback(
@@ -243,7 +243,7 @@ Eigen::Matrix<double, 7, 1> CartesianImpedanceController::saturateTorqueRate(
 }
 
 void CartesianImpedanceController::complianceParamCallback(
-    serl_franka_controllers::compliance_paramConfig& config,
+    fluxvla_franka_controllers::compliance_paramConfig& config,
     uint32_t /*level*/) {
   cartesian_stiffness_target_.setIdentity();
   cartesian_stiffness_target_.topLeftCorner(3, 3)
@@ -284,7 +284,7 @@ void CartesianImpedanceController::equilibriumPoseCallback(
   }
 }
 
-}  // namespace serl_franka_controllers
+}  // namespace fluxvla_franka_controllers
 
-PLUGINLIB_EXPORT_CLASS(serl_franka_controllers::CartesianImpedanceController,
+PLUGINLIB_EXPORT_CLASS(fluxvla_franka_controllers::CartesianImpedanceController,
                        controller_interface::ControllerBase)
