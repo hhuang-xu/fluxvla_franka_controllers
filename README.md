@@ -24,24 +24,6 @@ original MIT license and attribution are preserved in `LICENSE` and `NOTICE`.
 
 Use Ubuntu 20.04 with ROS Noetic and a catkin workspace.
 
-```bash
-sudo apt update
-sudo apt install \
-  build-essential cmake git python3-catkin-tools python3-rosdep \
-  ros-noetic-controller-interface \
-  ros-noetic-controller-manager \
-  ros-noetic-dynamic-reconfigure \
-  ros-noetic-eigen-conversions \
-  ros-noetic-franka-ros \
-  ros-noetic-hardware-interface \
-  ros-noetic-pluginlib \
-  ros-noetic-realtime-tools \
-  ros-noetic-ros-control \
-  ros-noetic-rqt-reconfigure \
-  ros-noetic-tf \
-  ros-noetic-tf-conversions
-```
-
 Install `libfranka` and `franka_ros` according to the Franka FCI documentation.
 On machines using the ROS packages, the command above installs the Noetic
 `franka_ros` stack and its packaged `libfranka` dependency.
