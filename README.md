@@ -4,15 +4,17 @@
 Emika robots. It contains Cartesian impedance control, Ruckig-smoothed joint
 position control, and a Ruckig-based joint impedance controller.
 
-This package is forked from the upstream SERL Franka controller package. The
-original MIT license and attribution are preserved in `LICENSE` and `NOTICE`.
+This package is forked from the upstream [SERL Franka controller package](https://github.com/rail-berkeley/serl_franka_controllers).
+The original MIT license and attribution are preserved in `LICENSE` and `NOTICE`.
 
 ## Controllers
 
-- `cartesian_impedance_controller`: Cartesian impedance controller with dynamic
-  reconfigure compliance parameters.
-- `joint_position_controller`: simple reset / point-to-point joint position
-  controller.
+- `cartesian_impedance_controller`: SERL's original Cartesian impedance
+  controller with dynamic reconfigure compliance parameters, included here
+  without modification. We thank the SERL authors for this work.
+- `joint_position_controller`: SERL's original simple reset / point-to-point
+  joint position controller, included here without modification. We thank the
+  SERL authors for this work.
 - `ruckig_joint_position_controller`: PositionJointInterface controller that
   accepts `sensor_msgs/JointState` targets on `target_joint_state` and smooths
   them with Ruckig.
@@ -122,14 +124,14 @@ Replay a prepared dual-arm CSV through the joint impedance controller at 30 Hz:
 
 ```bash
 rosrun fluxvla_franka_controllers replay_joint_impedance_csv.py \
-  --csv /path/to/replay.csv --control_mode joint --execute
+  --csv ./examples/replay.csv --control_mode joint --execute
 ```
 
 Replay end-effector poses through the SERL Cartesian impedance controller:
 
 ```bash
 rosrun fluxvla_franka_controllers replay_joint_impedance_csv.py \
-  --csv /path/to/replay.csv --control_mode eepose --execute
+  --csv ./examples/replay.csv --control_mode eepose --execute
 ```
 
 Joint mode expects `left_q1` ... `left_q7` and `right_q1` ... `right_q7`.
