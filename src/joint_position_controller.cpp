@@ -1,3 +1,9 @@
+// Copyright (c) 2024 RAIL Berkeley
+// Modifications Copyright 2026 Limx Dynamics
+// SPDX-License-Identifier: MIT
+//
+// Derived from serl_franka_controllers (MIT License). See LICENSE and NOTICE.
+
 /*
 Refered to Source file:
   https://github.com/frankaemika/franka_ros/blob/develop/franka_example_controllers/src/joint_position_example_controller.cpp

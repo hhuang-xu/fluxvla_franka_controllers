@@ -1,3 +1,9 @@
+// Copyright (c) 2024 RAIL Berkeley
+// Modifications Copyright 2026 Limx Dynamics
+// SPDX-License-Identifier: MIT
+//
+// Derived from serl_franka_controllers (MIT License). See LICENSE and NOTICE.
+
 // Refered to https://github.com/frankaemika/franka_ros/tree/develop/franka_example_controllers
 
 #pragma once

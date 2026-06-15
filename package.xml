@@ -3,10 +3,10 @@
   <name>fluxvla_franka_controllers</name>
   <version>0.1.1</version>
   <description>FluxVLA Franka controllers for Cartesian impedance, joint-position Ruckig smoothing, and joint-impedance Ruckig control on Franka Emika research robots.</description>
-  <maintainer email="fluxvla-maintainers@example.com">FluxVLA Maintainers</maintainer>
+  <maintainer email="lucas@limxdynamics.com">Lucas (Limx Dynamics)</maintainer>
   <license>MIT</license>
 
-  <author>FluxVLA Contributors</author>
+  <author email="lucas@limxdynamics.com">Limx Dynamics</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 

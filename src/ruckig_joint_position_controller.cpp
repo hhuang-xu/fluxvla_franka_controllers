@@ -1,3 +1,6 @@
+// Copyright 2026 Limx Dynamics
+// SPDX-License-Identifier: MIT
+
 // See ruckig_joint_position_controller.h for the controller layout.
 
 #include <fluxvla_franka_controllers/ruckig_joint_position_controller.h>

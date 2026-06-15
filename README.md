@@ -4,17 +4,19 @@
 Emika robots. It contains Cartesian impedance control, Ruckig-smoothed joint
 position control, and a Ruckig-based joint impedance controller.
 
-This package is forked from the upstream [SERL Franka controller package](https://github.com/rail-berkeley/serl_franka_controllers).
-The original MIT license and attribution are preserved in `LICENSE` and `NOTICE`.
+This package is maintained by Limx Dynamics and is forked from the upstream
+[SERL Franka controller package](https://github.com/rail-berkeley/serl_franka_controllers).
+It stays under the MIT License. The original copyright and attribution are
+preserved in `LICENSE` and `NOTICE`.
 
 ## Controllers
 
-- `cartesian_impedance_controller`: SERL's original Cartesian impedance
-  controller with dynamic reconfigure compliance parameters, included here
-  without modification. We thank the SERL authors for this work.
-- `joint_position_controller`: SERL's original simple reset / point-to-point
-  joint position controller, included here without modification. We thank the
-  SERL authors for this work.
+- `cartesian_impedance_controller`: SERL's Cartesian impedance controller with
+  dynamic reconfigure compliance parameters, adapted here with only package and
+  C++ namespace renaming. We thank the SERL authors for this work.
+- `joint_position_controller`: SERL's simple reset / point-to-point joint
+  position controller, adapted here with only package and C++ namespace
+  renaming. We thank the SERL authors for this work.
 - `ruckig_joint_position_controller`: PositionJointInterface controller that
   accepts `sensor_msgs/JointState` targets on `target_joint_state` and smooths
   them with Ruckig.
@@ -27,8 +29,8 @@ The original MIT license and attribution are preserved in `LICENSE` and `NOTICE`
 Use Ubuntu 20.04 with ROS Noetic and a catkin workspace.
 
 Install `libfranka` and `franka_ros` according to the Franka FCI documentation.
-On machines using the ROS packages, the command above installs the Noetic
-`franka_ros` stack and its packaged `libfranka` dependency.
+On machines using the ROS packages, installing the Noetic `franka_ros` stack
+also provides its packaged `libfranka` dependency.
 
 ## Install Ruckig
 
@@ -66,7 +68,7 @@ Place this repository in a catkin workspace:
 ```bash
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/src
-git clone <your-fluxvla-franka-controllers-repo> fluxvla_franka_controllers
+git clone https://github.com/hhuang-xu/fluxvla_franka_controllers.git fluxvla_franka_controllers
 cd ~/catkin_ws
 rosdep update
 rosdep install --from-paths src --ignore-src -r -y
@@ -120,6 +122,24 @@ Check that the controller is loaded:
 rosservice call /controller_manager/list_controllers
 ```
 
+You can also run a basic check with the CSV replay script provided by this
+controller package:
+
+> **Safety note**
+>
+> The example CSV data in this package is only meant to demonstrate how to use
+> the replay script and the controllers. It was recorded with two Franka arms
+> laid flat side by side on a table, with the bases roughly 1 meter apart.
+>
+> If your robot placement, base separation, workspace, or end-effector tooling
+> differs from these conditions, do not execute the example trajectory directly.
+> Test with a single arm first, or re-record replay data that matches your own
+> robot layout.
+>
+> Before and during execution, always confirm that the arms are within a safe
+> operating space, that no people or obstacles are nearby, and that an emergency
+> stop is within reach.
+
 Replay a prepared dual-arm CSV through the joint impedance controller at 30 Hz:
 
 ```bash
@@ -140,18 +160,3 @@ and the matching `right_*` columns. Optional `left_gripper` and `right_gripper`
 columns are published to the Franka gripper move action goal topics.
 Dataset-specific conversion, such as parquet to CSV, should live outside this
 controller package.
-
-## Realtime Note
-
-`franka_ros` expects a realtime-capable system for robot control. If you are
-developing on a non-realtime machine, follow the Franka documentation for safe
-setup. For local testing without hardware, do not connect to the robot.
-
-Some development machines ignore the realtime check in
-`franka_control/config/franka_control_node.yaml`:
-
-```yaml
-realtime_config: ignore
-```
-
-Only use that workaround if it matches your lab's safety policy.

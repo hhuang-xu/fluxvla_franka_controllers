@@ -1,3 +1,6 @@
+// Copyright 2026 Limx Dynamics
+// SPDX-License-Identifier: MIT
+
 // Ruckig-smoothed joint impedance controller for Franka.
 //
 // The controller accepts low-rate sensor_msgs/JointState targets, shapes them

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright 2026 Limx Dynamics
+# SPDX-License-Identifier: MIT
 """Replay CSV targets to joint or Cartesian Franka controllers."""
 
 import argparse

@@ -1,3 +1,6 @@
+// Copyright 2026 Limx Dynamics
+// SPDX-License-Identifier: MIT
+
 // Jerk-limited joint-position controller with input target smoothing.
 //
 // This controller subscribes to target_joint_state and filters the incoming
